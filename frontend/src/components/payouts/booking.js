@@ -76,6 +76,7 @@ const Booking = () => {
           return ""; // Return empty if dateString is null/undefined
         };
         if (result.success && result.result) {
+          setLoader(true);
             const allSites = result.result;
             setSites(allSites); // Store al
             // Assuming result.result is an array of sites
@@ -98,12 +99,12 @@ const Booking = () => {
                     // Compare only the dates
                     return normalizedPaymentDate >= normalizedStartDate && normalizedPaymentDate <= normalizedEndDate;
                   });
-                  
+
                  return { ...site, propertyName, payments: filteredPayments }; // Add property name to the site object
                 })
               );
               setSites(updatedSites);
-      
+              setLoader(false);
            // setPayments(allPayments); // Set payments state
           } else {
             console.error("No data found for the given parameter.");

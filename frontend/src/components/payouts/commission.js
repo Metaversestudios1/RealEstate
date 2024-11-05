@@ -84,6 +84,7 @@ const Commission = () => {
       const result = await response.json();
       if (result.success && result.result) {
         if (result.success && result.result) {
+          setLoader(true);
             const allAgent = result.result;
             const start = new Date(startDate); // Define startDate and endDate as needed
             const end = new Date(endDate);
@@ -123,7 +124,7 @@ const Commission = () => {
               })
             );
       
-            setAgent(allAgentsWithFilteredCommissions);
+            setAgent(allAgentsWithFilteredCommissions); setLoader(false);
           
            // setPayments(allPayments); // Set payments state
           } else {
