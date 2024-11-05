@@ -22,7 +22,7 @@ const CommonRoute = require("./Routes/CommonRoute");
 connectDB();
 const server = http.createServer(app);
 const corsOptions = {
-  origin: ["https://real-estate-backend-wine.vercel.app","https://real-estate-client-agent.vercel.app"],
+  origin: ["https://real-estate-frontend-ruddy.vercel.app","https://real-estate-client-agent.vercel.app"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
   credentials: true,
