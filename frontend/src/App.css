@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.invalid-feedback {
+  color: #b82020;
+  font-size: 0.875rem;
+  display: block; /* Ensure error messages are visible */
+}
+
+.is-invalid {
+  border-color: #b82020;
+}
+
+.is-valid {
+  border-color: green;
+}
+.error {
+  color: #b82020 !important;
+  font-size: 14px !important;
+}
+
+/* styles.css */
+.custom-toast-error {
+  background-color: red; /* Change this to your preferred color */
+  color: white; /* Text color */
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #1e1e2f;
+}
+
+.game-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #2d2d44;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 800px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.history {
+  background-color: #3d3d5c;
+  padding: 15px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game {
+  position: relative;
+  background-color: black;
+  padding: 15px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plane {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 120px;
+  height: auto;
+  transition: transform 100ms linear;
+}
+
+.bet {
+  background-color: #3d3d5c;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+}
+
+.loading {
+  display: block;
+  animation: rotateLoader 1s linear infinite;
+  position: absolute;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes rotateLoader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
