@@ -8,6 +8,7 @@ const connectDB = async () =>{
           await mongoose.connect(process.env.MONGODB_URI);
         // await mongoose.connect("mongodb://localhost:27017/AJV");
         console.log('mongdb connected');
+        console.log(process.env.MONGODB_URI);
 
     }catch(error){
         if(error.message.includes('database exists')){
