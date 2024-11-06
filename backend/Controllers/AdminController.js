@@ -27,70 +27,132 @@ const insertadmin = async (req, res) => {
       });
   }
 };
-const login = async (req, res) => {
-  const { email, password } = req.body; // Include role in the destructuring
-  try {
-    // Check if all fields are provided
-    if (!email || !password ) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Please provide all fields" });
-    }
+// const login = async (req, res) => {
+//   const { email, password } = req.body; // Include role in the destructuring
+//   try {
+//     // Check if all fields are provided
+//     if (!email || !password ) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Please provide all fields" });
+//     }
 
-    // Find the admin by email
-    const admin = await Admin.findOne({ email });
+//     // Find the admin by email
+//     const admin = await Admin.findOne({ email });
     
-    if (!admin) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Email not found" });
+//     if (!admin) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Email not found" });
+//     }
+
+//     // Compare the provided password with the stored hashed password
+//     const match = await bcrypt.compare(password, admin.password);
+//     if (!match) {
+//       return res
+//         .status(401)
+//         .json({ success: false, message: "Password does not match" });
+//     }
+//     const tokenExpiryDuration = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
+//     if (admin.lastLoginToken && admin.lastLoginTime && Date.now() - admin.lastLoginTime < tokenExpiryDuration) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "Already logged in on another browser. Please log out from there first.",
+//       });
+//     }
+
+//     // Generate a JWT token
+//     const token = jwt.sign(
+//       { id: admin._id }, // Include role in the token payload if needed
+//       process.env.JWT_SECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     admin.lastLoginToken = token;
+//     admin.lastLoginTime = Date.now();
+//     await admin.save();
+//     // Set cookie options
+//     const options = {
+//       expires: new Date(Date.now() + 2592000000), // 30 days
+//       httpOnly: true,
+//       sameSite: "None",
+//     };
+
+//     // Send response with token and admin details
+//     res.cookie("token", token, options).json({
+//       success: true,
+//       token,
+//       admin,
+//     });
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Server error: " + err.message });
+//   }
+// };
+
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
 
-    // Compare the provided password with the stored hashed password
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Email not found" });
+    }
+
     const match = await bcrypt.compare(password, admin.password);
     if (!match) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Password does not match" });
-    }
-    const tokenExpiryDuration = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
-    if (admin.lastLoginToken && admin.lastLoginTime && Date.now() - admin.lastLoginTime < tokenExpiryDuration) {
-      return res.status(403).json({
-        success: false,
-        message: "Already logged in on another browser. Please log out from there first.",
-      });
+      return res.status(401).json({ success: false, message: "Password does not match" });
     }
 
-    // Generate a JWT token
+    const tokenExpiryDuration = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
+    // Check if last login time is set and not expired
+    if (admin.lastLoginToken && admin.lastLoginTime) {
+      const timeElapsed = Date.now() - admin.lastLoginTime;
+      if (timeElapsed < tokenExpiryDuration) {
+        return res.status(403).json({
+          success: false,
+          message: "Already logged in on another browser. Please log out from there first.",
+        });
+      } else {
+        // Expired session, reset login fields
+        admin.lastLoginToken = null;
+        admin.lastLoginTime = null;
+        await admin.save();
+      }
+    }
+
+    // Generate a new JWT token
     const token = jwt.sign(
-      { id: admin._id }, // Include role in the token payload if needed
+      { id: admin._id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
+    // Update last login fields with the new session info
     admin.lastLoginToken = token;
     admin.lastLoginTime = Date.now();
     await admin.save();
-    // Set cookie options
+
     const options = {
       expires: new Date(Date.now() + 2592000000), // 30 days
       httpOnly: true,
       sameSite: "None",
     };
 
-    // Send response with token and admin details
     res.cookie("token", token, options).json({
       success: true,
       token,
       admin,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Server error: " + err.message });
+    res.status(500).json({ success: false, message: "Server error: " + err.message });
   }
 };
-
 const logout = async (req, res) => {
   try {
     const { id } = req.body;
