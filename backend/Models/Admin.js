@@ -20,6 +20,12 @@ const AdminSchema = new mongoose.Schema({
         type: Date, // Store the timestamp of the last login
         default: null,
       },
+      loginHistory: [
+        {
+          ipAddress: String,
+          date: Date,
+        },
+      ],
 } ,{ timestamps: true, collection: "admin" });
 
 module.exports= mongoose.model("Admin",AdminSchema);
