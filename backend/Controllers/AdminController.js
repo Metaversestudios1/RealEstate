@@ -156,23 +156,25 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   try {
     const { id } = req.body;
-    // Clear the session cookies
+
+    // Step 1: Clear the session cookies (JWT and session ID)
     res.clearCookie("connect.sid"); // Clear the session ID cookie
     res.clearCookie("token"); // Clear the JWT cookie
-    
-    // Optionally, clear the lastLoginToken from the database if you want to allow a new login
-    const adminId = id; // Assuming you're using middleware to set req.user
-    if (adminId) {
-      await Admin.findByIdAndUpdate(adminId, { lastLoginToken: null });
+
+    // Step 2: Reset `lastLoginToken` and `lastLoginTime` in the database
+    if (id) {
+      const admin = await Admin.findById(id);
+      if (admin) {
+        admin.lastLoginToken = null; // Reset last login token
+        admin.lastLoginTime = null;  // Reset last login time
+        await admin.save(); // Save the changes
+      }
     }
 
     return res.status(200).json({ success: true, message: "Successfully logged out" });
   } catch (err) {
     return res.status(500).json({ success: false, message: "Server error: " + err.message });
   }
-  // res.clearCookie("connect.sid"); // Name of the session ID cookie
-  // res.clearCookie("token"); // Name of the session ID cookie
-  // res.status(200).json({ status: true, message: "Successfully logged out" });
 };
 
 const updateAdmin = async (req, res) => {
